@@ -20,12 +20,14 @@ CURRENCY = "DKK"
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
     coordinator: ElregningCoordinator = entry.runtime_data
-    async_add_entities([
-        ForecastSensor(coordinator),
-        SoFarSensor(coordinator),
-        LastBillSensor(coordinator),
-        DifferenceSensor(coordinator),
-    ])
+    async_add_entities(
+        [
+            ForecastSensor(coordinator),
+            SoFarSensor(coordinator),
+            LastBillSensor(coordinator),
+            DifferenceSensor(coordinator),
+        ]
+    )
 
 
 class _Base(CoordinatorEntity[ElregningCoordinator], SensorEntity):

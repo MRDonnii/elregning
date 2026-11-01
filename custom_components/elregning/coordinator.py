@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from datetime import date, datetime, timedelta
 import logging
+from datetime import date, datetime, timedelta
 from typing import Any
 
 from homeassistant.components.recorder import get_instance
@@ -127,12 +127,14 @@ class ElregningCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             last = _add_months(first, 1) - timedelta(days=1)
             measured = await self._measured(first, last)
             if measured.days_with_data and measured.kwh:
-                months.append({
-                    "month": first.strftime("%Y-%m"),
-                    "kwh": round(measured.kwh, 1) if measured.kwh is not None else None,
-                    "cost": round(measured.cost, 2) if measured.cost is not None else None,
-                    "coverage": round(measured.coverage, 3),
-                })
+                months.append(
+                    {
+                        "month": first.strftime("%Y-%m"),
+                        "kwh": round(measured.kwh, 1) if measured.kwh is not None else None,
+                        "cost": round(measured.cost, 2) if measured.cost is not None else None,
+                        "coverage": round(measured.coverage, 3),
+                    }
+                )
 
         return {
             "bills": list(reversed(compared)),

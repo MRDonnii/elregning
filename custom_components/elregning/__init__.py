@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
-from datetime import date
 import uuid
+from datetime import date
 
 import voluptuous as vol
-
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant, ServiceCall, ServiceResponse, SupportsResponse
@@ -25,19 +24,23 @@ _FIELDS = {
     vol.Optional("supplier"): vol.Any(None, cv.string),
     vol.Optional("note"): vol.Any(None, cv.string),
 }
-ADD_SCHEMA = vol.Schema({
-    vol.Required("start_date"): cv.date,
-    vol.Required("end_date"): cv.date,
-    vol.Required("amount"): vol.All(vol.Coerce(float), vol.Range(min=0)),
-    **_FIELDS,
-})
-UPDATE_SCHEMA = vol.Schema({
-    vol.Required("id"): cv.string,
-    vol.Optional("start_date"): cv.date,
-    vol.Optional("end_date"): cv.date,
-    vol.Optional("amount"): vol.All(vol.Coerce(float), vol.Range(min=0)),
-    **_FIELDS,
-})
+ADD_SCHEMA = vol.Schema(
+    {
+        vol.Required("start_date"): cv.date,
+        vol.Required("end_date"): cv.date,
+        vol.Required("amount"): vol.All(vol.Coerce(float), vol.Range(min=0)),
+        **_FIELDS,
+    }
+)
+UPDATE_SCHEMA = vol.Schema(
+    {
+        vol.Required("id"): cv.string,
+        vol.Optional("start_date"): cv.date,
+        vol.Optional("end_date"): cv.date,
+        vol.Optional("amount"): vol.All(vol.Coerce(float), vol.Range(min=0)),
+        **_FIELDS,
+    }
+)
 DELETE_SCHEMA = vol.Schema({vol.Required("id"): cv.string})
 
 

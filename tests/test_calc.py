@@ -33,8 +33,10 @@ def test_ratio_uses_last_three_complete_bills():
         compare_bill(_bill("2026-07-01", "2026-07-31", 1100.0, id_="b"), m),
         compare_bill(_bill("2026-08-01", "2026-08-31", 1000.0, id_="c"), m),
         compare_bill(_bill("2026-09-01", "2026-09-30", 900.0, id_="d"), m),
-        compare_bill(_bill("2026-10-01", "2026-10-31", 9999.0, id_="partial"),
-                     Measured(kwh=10.0, cost=100.0, days_with_data=3, days=31)),
+        compare_bill(
+            _bill("2026-10-01", "2026-10-31", 9999.0, id_="partial"),
+            Measured(kwh=10.0, cost=100.0, days_with_data=3, days=31),
+        ),
     ]
     ratio, n = bill_ratio(bills)
     assert n == 3 and abs(ratio - 1.0) < 1e-9

@@ -5,7 +5,6 @@ from __future__ import annotations
 from typing import Any
 
 import voluptuous as vol
-
 from homeassistant.config_entries import ConfigEntry, ConfigFlow, ConfigFlowResult, OptionsFlow
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import selector
@@ -34,14 +33,16 @@ async def _energy_defaults(hass: HomeAssistant) -> tuple[str | None, str | None]
 
 
 def _schema(energy: str | None, cost: str | None) -> vol.Schema:
-    return vol.Schema({
-        vol.Required(CONF_ENERGY, default=energy or vol.UNDEFINED): selector.EntitySelector(
-            selector.EntitySelectorConfig(domain="sensor", device_class="energy")
-        ),
-        vol.Required(CONF_COST, default=cost or vol.UNDEFINED): selector.EntitySelector(
-            selector.EntitySelectorConfig(domain="sensor", device_class="monetary")
-        ),
-    })
+    return vol.Schema(
+        {
+            vol.Required(CONF_ENERGY, default=energy or vol.UNDEFINED): selector.EntitySelector(
+                selector.EntitySelectorConfig(domain="sensor", device_class="energy")
+            ),
+            vol.Required(CONF_COST, default=cost or vol.UNDEFINED): selector.EntitySelector(
+                selector.EntitySelectorConfig(domain="sensor", device_class="monetary")
+            ),
+        }
+    )
 
 
 class ElregningConfigFlow(ConfigFlow, domain=DOMAIN):
@@ -66,4 +67,6 @@ class ElregningOptionsFlow(OptionsFlow):
         if user_input is not None:
             return self.async_create_entry(data=user_input)
         current = {**self.config_entry.data, **self.config_entry.options}
-        return self.async_show_form(step_id="init", data_schema=_schema(current.get(CONF_ENERGY), current.get(CONF_COST)))
+        return self.async_show_form(
+            step_id="init", data_schema=_schema(current.get(CONF_ENERGY), current.get(CONF_COST))
+        )
