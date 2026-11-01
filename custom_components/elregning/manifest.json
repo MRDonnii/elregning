@@ -1,13 +1,20 @@
 {
   "domain": "elregning",
   "name": "Elregning",
-  "after_dependencies": ["energy"],
-  "codeowners": [],
+  "after_dependencies": [
+    "energy"
+  ],
+  "codeowners": [
+    "@MRDonnii"
+  ],
   "config_flow": true,
-  "dependencies": ["recorder"],
-  "documentation": "https://www.home-assistant.io",
+  "dependencies": [
+    "recorder"
+  ],
+  "documentation": "https://github.com/MRDonnii/elregning",
   "integration_type": "service",
   "iot_class": "calculated",
+  "issue_tracker": "https://github.com/MRDonnii/elregning/issues",
   "requirements": [],
   "single_config_entry": true,
   "version": "0.1.0"
