@@ -1,0 +1,73 @@
+add_bill:
+  fields:
+    start_date:
+      required: true
+      selector:
+        date:
+    end_date:
+      required: true
+      selector:
+        date:
+    amount:
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 100000
+          step: 0.01
+          unit_of_measurement: kr
+          mode: box
+    kwh:
+      selector:
+        number:
+          min: 0
+          max: 100000
+          step: 0.01
+          unit_of_measurement: kWh
+          mode: box
+    supplier:
+      selector:
+        text:
+    note:
+      selector:
+        text:
+update_bill:
+  fields:
+    id:
+      required: true
+      selector:
+        text:
+    start_date:
+      selector:
+        date:
+    end_date:
+      selector:
+        date:
+    amount:
+      selector:
+        number:
+          min: 0
+          max: 100000
+          step: 0.01
+          unit_of_measurement: kr
+          mode: box
+    kwh:
+      selector:
+        number:
+          min: 0
+          max: 100000
+          step: 0.01
+          unit_of_measurement: kWh
+          mode: box
+    supplier:
+      selector:
+        text:
+    note:
+      selector:
+        text:
+delete_bill:
+  fields:
+    id:
+      required: true
+      selector:
+        text:

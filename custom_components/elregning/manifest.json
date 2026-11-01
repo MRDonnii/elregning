@@ -1,0 +1,14 @@
+{
+  "domain": "elregning",
+  "name": "Elregning",
+  "after_dependencies": ["energy"],
+  "codeowners": [],
+  "config_flow": true,
+  "dependencies": ["recorder"],
+  "documentation": "https://www.home-assistant.io",
+  "integration_type": "service",
+  "iot_class": "calculated",
+  "requirements": [],
+  "single_config_entry": true,
+  "version": "0.1.0"
+}

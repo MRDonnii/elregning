@@ -1,0 +1,105 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Elregning",
+        "description": "Vælg elmåleren og dens omkostning. Standard er energi-dashboardets net-forbrug.",
+        "data": {
+          "energy_entity": "Elmåler (kWh)",
+          "cost_entity": "Omkostning (kr)"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Elregning er allerede sat op",
+      "single_instance_allowed": "Elregning er allerede sat op"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Elregning",
+        "data": {
+          "energy_entity": "Elmåler (kWh)",
+          "cost_entity": "Omkostning (kr)"
+        }
+      }
+    }
+  },
+  "services": {
+    "add_bill": {
+      "name": "Tilføj elregning",
+      "description": "Gem en elregning og hold den op mod HA's egen måling for samme periode.",
+      "fields": {
+        "start_date": {
+          "name": "Fra",
+          "description": "Første dag regningen dækker."
+        },
+        "end_date": {
+          "name": "Til",
+          "description": "Sidste dag regningen dækker."
+        },
+        "amount": {
+          "name": "Beløb",
+          "description": "Regningens beløb i kr inkl. moms."
+        },
+        "kwh": {
+          "name": "kWh",
+          "description": "Forbruget på regningen (valgfrit)."
+        },
+        "supplier": {
+          "name": "Leverandør",
+          "description": "Fx Vindstød (valgfrit)."
+        },
+        "note": {
+          "name": "Note",
+          "description": "Valgfri bemærkning."
+        }
+      }
+    },
+    "update_bill": {
+      "name": "Ret elregning",
+      "description": "Ret en gemt elregning.",
+      "fields": {
+        "id": {
+          "name": "Id",
+          "description": "Regningens id."
+        },
+        "start_date": {
+          "name": "Fra",
+          "description": "Første dag regningen dækker."
+        },
+        "end_date": {
+          "name": "Til",
+          "description": "Sidste dag regningen dækker."
+        },
+        "amount": {
+          "name": "Beløb",
+          "description": "Regningens beløb i kr inkl. moms."
+        },
+        "kwh": {
+          "name": "kWh",
+          "description": "Forbruget på regningen (valgfrit)."
+        },
+        "supplier": {
+          "name": "Leverandør",
+          "description": "Fx Vindstød (valgfrit)."
+        },
+        "note": {
+          "name": "Note",
+          "description": "Valgfri bemærkning."
+        }
+      }
+    },
+    "delete_bill": {
+      "name": "Slet elregning",
+      "description": "Slet en gemt elregning.",
+      "fields": {
+        "id": {
+          "name": "Id",
+          "description": "Regningens id."
+        }
+      }
+    }
+  }
+}
