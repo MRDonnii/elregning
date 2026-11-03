@@ -4,6 +4,11 @@ from datetime import datetime, timedelta
 
 import pytest
 from homeassistant.components.recorder.statistics import async_import_statistics
+
+try:  # HA 2025.4+ wants mean_type (and from 2025.10 unit_class) in the metadata
+    from homeassistant.components.recorder.models import StatisticMeanType
+except ImportError:  # older HA only knows has_mean
+    StatisticMeanType = None
 from homeassistant.exceptions import ServiceValidationError
 from homeassistant.util import dt as dt_util
 from pytest_homeassistant_custom_component.common import MockConfigEntry
@@ -28,19 +33,22 @@ async def _seed(hass, end_utc):
         rows_e.append({"start": t, "state": total, "sum": total})
         rows_c.append({"start": t, "state": total * PRICE, "sum": total * PRICE})
         t += timedelta(hours=1)
-    for stat_id, unit, rows in ((ENERGY, "kWh", rows_e), (COST, "DKK", rows_c)):
-        async_import_statistics(
-            hass,
-            {
-                "has_mean": False,
-                "has_sum": True,
-                "name": None,
-                "source": "recorder",
-                "statistic_id": stat_id,
-                "unit_of_measurement": unit,
-            },
-            rows,
-        )
+    for stat_id, unit, unit_class, rows in (
+        (ENERGY, "kWh", "energy", rows_e),
+        (COST, "DKK", None, rows_c),
+    ):
+        metadata = {
+            "has_mean": False,
+            "has_sum": True,
+            "name": None,
+            "source": "recorder",
+            "statistic_id": stat_id,
+            "unit_of_measurement": unit,
+        }
+        if StatisticMeanType is not None:
+            metadata["mean_type"] = StatisticMeanType.NONE
+            metadata["unit_class"] = unit_class
+        async_import_statistics(hass, metadata, rows)
     await async_wait_recording_done(hass)
 
 
