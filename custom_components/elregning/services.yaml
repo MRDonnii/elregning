@@ -45,6 +45,10 @@ add_bill:
           options:
             - el
             - gas
+            - fjernvarme
+    aconto:
+      selector:
+        boolean:
 update_bill:
   fields:
     id:
@@ -93,6 +97,10 @@ update_bill:
           options:
             - el
             - gas
+            - fjernvarme
+    aconto:
+      selector:
+        boolean:
 delete_bill:
   fields:
     id:

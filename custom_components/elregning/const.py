@@ -17,4 +17,4 @@ SERVICE_UPDATE = "update_bill"
 SERVICE_DELETE = "delete_bill"
 
 # Forsyninger, en regning kan være for. Kun el holdes op mod HA's måling.
-UTILITIES = ("el", "gas")
+UTILITIES = ("el", "gas", "fjernvarme")

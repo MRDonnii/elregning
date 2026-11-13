@@ -117,7 +117,7 @@ class LastBillSensor(_Base):
     _attr_device_class = SensorDeviceClass.MONETARY
     _attr_native_unit_of_measurement = CURRENCY
     _attr_suggested_display_precision = 0
-    _unrecorded_attributes = frozenset({"regninger", "gasregninger", "aar"})
+    _unrecorded_attributes = frozenset({"regninger", "gasregninger", "fjernvarmeregninger", "aar"})
 
     @property
     def native_value(self) -> float | None:
@@ -138,6 +138,7 @@ class LastBillSensor(_Base):
             "daekning": last.get("coverage"),
             "regninger": self.coordinator.data["bills"],
             "gasregninger": self.coordinator.data.get("gas_bills", []),
+            "fjernvarmeregninger": self.coordinator.data.get("heat_bills", []),
             "aar": self.coordinator.data.get("years", []),
         }
 

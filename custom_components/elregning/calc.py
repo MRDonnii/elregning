@@ -22,6 +22,7 @@ RATIO_LIMITS = (0.5, 2.0)
 
 UTILITY_EL = "el"
 UTILITY_GAS = "gas"
+UTILITY_HEAT = "fjernvarme"
 
 
 @dataclass(frozen=True)
@@ -114,14 +115,19 @@ def forecast(
 
 
 def gas_bill(bill: dict) -> dict:
-    """En gasregning som den vises: gas måles ikke af HA, så den sammenlignes ikke (Claude AI, 2026-11-13)."""
+    """En gas- eller fjernvarmeregning som den vises. Den holdes ikke op mod elmåleren (Claude AI, 2026-11-13).
+
+    aconto=True: et forventet beløb (fjernvarme opkræves a conto og gøres op én gang om året).
+    """
     start, end = date.fromisoformat(bill["start"]), date.fromisoformat(bill["end"])
     amount = float(bill["amount"])
     m3 = bill.get("m3")
     kwh = bill.get("kwh")
     return {
         "id": bill["id"],
-        "utility": UTILITY_GAS,
+        "utility": bill.get("utility") or UTILITY_GAS,
+        "aconto": bool(bill.get("aconto")),
+        "price_kwh": round(amount / float(kwh), 3) if kwh else None,
         "start": bill["start"],
         "end": bill["end"],
         "days": bill_days(start, end),
@@ -135,7 +141,7 @@ def gas_bill(bill: dict) -> dict:
 
 
 def yearly_totals(bills: list[dict]) -> list[dict]:
-    """Regningerne lagt sammen pr. kalenderår og forsyning (el/gas), nyeste år først.
+    """Regningerne lagt sammen pr. kalenderår og forsyning (el/gas/fjernvarme), nyeste år først.
 
     En regning, der går hen over et årsskifte, fordeles efter antal dage i hvert år. "months" er antal
     måneder, regningerne dækker i året (dage ÷ gennemsnitlig månedslængde), så et år med huller kan ses.

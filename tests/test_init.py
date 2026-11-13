@@ -156,6 +156,15 @@ async def test_gas_bills_are_kept_apart(hass, recorder_mock, freezer, hass_time_
         # Gas for samme måned: må ikke blive "seneste regning" eller trække prognosen
         {"start_date": "2026-10-01", "end_date": "2026-10-31", "amount": 900, "m3": 100, "utility": "gas"},
         {"start_date": "2025-10-01", "end_date": "2025-12-31", "amount": 3000, "m3": 600, "utility": "gas"},
+        # Fjernvarme a conto: heller ikke med i elsammenligningen
+        {
+            "start_date": "2026-10-01",
+            "end_date": "2026-10-31",
+            "amount": 1160,
+            "kwh": 1477,
+            "utility": "fjernvarme",
+            "aconto": True,
+        },
     ):
         await hass.services.async_call(DOMAIN, "add_bill", data, blocking=True, return_response=True)
     await hass.async_block_till_done()
@@ -169,6 +178,10 @@ async def test_gas_bills_are_kept_apart(hass, recorder_mock, freezer, hass_time_
     years = {(y["year"], y["utility"]): y for y in last.attributes["aar"]}
     assert years[(2026, "el")]["amount"] == 1600 and years[(2026, "gas")]["m3"] == 100
     assert years[(2025, "gas")]["amount"] == 3000
+    heat = last.attributes["fjernvarmeregninger"]
+    assert len(heat) == 1 and heat[0]["aconto"] and heat[0]["utility"] == "fjernvarme"
+    assert heat[0]["price_kwh"] == round(1160 / 1477, 3)
+    assert years[(2026, "fjernvarme")]["kwh"] == 1477
     ratio = hass.states.get("sensor.elregning_prognose_denne_maned").attributes["forhold_regning_maaling"]
     assert ratio == round(1600 / (745 * PRICE), 4)
 

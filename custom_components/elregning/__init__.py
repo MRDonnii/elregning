@@ -25,6 +25,7 @@ _FIELDS = {
     vol.Optional("note"): vol.Any(None, cv.string),
     vol.Optional("m3"): vol.Any(None, vol.All(vol.Coerce(float), vol.Range(min=0))),
     vol.Optional("utility"): vol.In(UTILITIES),
+    vol.Optional("aconto"): cv.boolean,
 }
 ADD_SCHEMA = vol.Schema(
     {
@@ -62,6 +63,8 @@ def _apply(bill: dict, data: dict) -> None:
         bill["amount"] = round(float(data["amount"]), 2)
     if "utility" in data:
         bill["utility"] = data["utility"]
+    if "aconto" in data:
+        bill["aconto"] = bool(data["aconto"])
     for key in ("kwh", "m3", "supplier", "note"):
         if key in data:
             value = data[key]

@@ -57,11 +57,15 @@
         },
         "utility": {
           "name": "Forsyning",
-          "description": "el (standard) holdes op mod HA's måler; gasregninger gemmes kun og lægges sammen pr. år."
+          "description": "el (standard) holdes op mod HA's måler; gas- og fjernvarmeregninger gemmes kun og lægges sammen pr. år."
         },
         "m3": {
           "name": "m³",
           "description": "Gasforbrug på regningen (valgfrit)."
+        },
+        "aconto": {
+          "name": "A conto",
+          "description": "Beløbet er et forventet beløb (a conto), som gøres op senere."
         }
       }
     },
@@ -99,11 +103,15 @@
         },
         "utility": {
           "name": "Forsyning",
-          "description": "el (standard) holdes op mod HA's måler; gasregninger gemmes kun og lægges sammen pr. år."
+          "description": "el (standard) holdes op mod HA's måler; gas- og fjernvarmeregninger gemmes kun og lægges sammen pr. år."
         },
         "m3": {
           "name": "m³",
           "description": "Gasforbrug på regningen (valgfrit)."
+        },
+        "aconto": {
+          "name": "A conto",
+          "description": "Beløbet er et forventet beløb (a conto), som gøres op senere."
         }
       }
     },

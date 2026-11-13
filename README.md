@@ -24,7 +24,7 @@ Installér **Elregning**, genstart Home Assistant og tilføj integrationen under
 
 | Tjeneste | Felter |
 |---|---|
-| `elregning.add_bill` | `start_date`, `end_date`, `amount` (kr inkl. moms), valgfrit `kwh`, `m3`, `utility` (`el`/`gas`, standard `el`), `supplier`, `note` – svarer med `id` |
+| `elregning.add_bill` | `start_date`, `end_date`, `amount` (kr inkl. moms), valgfrit `kwh`, `m3`, `utility` (`el`/`gas`/`fjernvarme`, standard `el`), `aconto`, `supplier`, `note` – svarer med `id` |
 | `elregning.update_bill` | `id` + de felter, der skal ændres |
 | `elregning.delete_bill` | `id` |
 
@@ -34,7 +34,7 @@ Installér **Elregning**, genstart Home Assistant og tilføj integrationen under
   gennemsnit, målt pr. måned (`maaneder`).
 - **Målt denne måned** (kr, attribut `kwh`).
 - **Seneste regning** (kr) – elregningerne med sammenligning i attributten `regninger`, gasregningerne i
-  `gasregninger` og alt lagt sammen pr. år og forsyning i `aar`. Gas holdes ikke op mod elmåleren og påvirker ikke
+  `gasregninger`, fjernvarmeregningerne i `fjernvarmeregninger` og alt lagt sammen pr. år og forsyning i `aar`. Gas holdes ikke op mod elmåleren og påvirker ikke
   prognosen.
 - **Afvigelse seneste regning** (%).
 

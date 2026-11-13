@@ -57,11 +57,15 @@
         },
         "utility": {
           "name": "Utility",
-          "description": "el (default) is compared with Home Assistant's meter; gas bills are only stored and summed per year."
+          "description": "el (default) is compared with Home Assistant's meter; gas and district-heating (fjernvarme) bills are only stored and summed per year."
         },
         "m3": {
           "name": "m³",
           "description": "Gas consumption on the bill (optional)."
+        },
+        "aconto": {
+          "name": "A conto",
+          "description": "The amount is an estimate (a conto), settled later."
         }
       }
     },
@@ -99,11 +103,15 @@
         },
         "utility": {
           "name": "Utility",
-          "description": "el (default) is compared with Home Assistant's meter; gas bills are only stored and summed per year."
+          "description": "el (default) is compared with Home Assistant's meter; gas and district-heating (fjernvarme) bills are only stored and summed per year."
         },
         "m3": {
           "name": "m³",
           "description": "Gas consumption on the bill (optional)."
+        },
+        "aconto": {
+          "name": "A conto",
+          "description": "The amount is an estimate (a conto), settled later."
         }
       }
     },
