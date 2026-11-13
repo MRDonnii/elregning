@@ -24,7 +24,7 @@ Installér **Elregning**, genstart Home Assistant og tilføj integrationen under
 
 | Tjeneste | Felter |
 |---|---|
-| `elregning.add_bill` | `start_date`, `end_date`, `amount` (kr inkl. moms), valgfrit `kwh`, `supplier`, `note` – svarer med `id` |
+| `elregning.add_bill` | `start_date`, `end_date`, `amount` (kr inkl. moms), valgfrit `kwh`, `m3`, `utility` (`el`/`gas`, standard `el`), `supplier`, `note` – svarer med `id` |
 | `elregning.update_bill` | `id` + de felter, der skal ændres |
 | `elregning.delete_bill` | `id` |
 
@@ -33,7 +33,9 @@ Installér **Elregning**, genstart Home Assistant og tilføj integrationen under
 - **Prognose denne måned** (kr) – attributter: egen beregning, forventet kWh, forhold, målt indtil nu, dagligt
   gennemsnit, målt pr. måned (`maaneder`).
 - **Målt denne måned** (kr, attribut `kwh`).
-- **Seneste regning** (kr) – alle regninger med sammenligning i attributten `regninger`.
+- **Seneste regning** (kr) – elregningerne med sammenligning i attributten `regninger`, gasregningerne i
+  `gasregninger` og alt lagt sammen pr. år og forsyning i `aar`. Gas holdes ikke op mod elmåleren og påvirker ikke
+  prognosen.
 - **Afvigelse seneste regning** (%).
 
 Kortet `ha-electricity-bill-card` i [Smart Home Cards](https://github.com/MRDonnii/ha-smart-home-cards) viser det hele og

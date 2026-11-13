@@ -15,3 +15,6 @@ HISTORY_MONTHS = 6
 SERVICE_ADD = "add_bill"
 SERVICE_UPDATE = "update_bill"
 SERVICE_DELETE = "delete_bill"
+
+# Forsyninger, en regning kan være for. Kun el holdes op mod HA's måling.
+UTILITIES = ("el", "gas")

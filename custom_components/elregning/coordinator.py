@@ -14,7 +14,7 @@ from homeassistant.helpers.storage import Store
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.util import dt as dt_util
 
-from .calc import Measured, bill_ratio, compare_bill, forecast
+from .calc import UTILITY_EL, UTILITY_GAS, Measured, bill_ratio, compare_bill, forecast, gas_bill, yearly_totals
 from .const import AVERAGE_DAYS, CONF_COST, CONF_ENERGY, DOMAIN, HISTORY_MONTHS, STORAGE_KEY, STORAGE_VERSION
 
 _LOGGER = logging.getLogger(__name__)
@@ -97,7 +97,12 @@ class ElregningCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         today = now.date()
 
         compared = []
+        gas = []
         for bill in sorted(self.bills, key=lambda b: (b["start"], b["end"])):
+            # Gas måles ikke af HA's elmåler og må ikke komme med i sammenligningen eller prognosen
+            if (bill.get("utility") or UTILITY_EL) == UTILITY_GAS:
+                gas.append(gas_bill(bill))
+                continue
             measured = await self._measured(date.fromisoformat(bill["start"]), date.fromisoformat(bill["end"]))
             compared.append(compare_bill(bill, measured))
         ratio, ratio_bills = bill_ratio(compared)
@@ -138,6 +143,8 @@ class ElregningCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
         return {
             "bills": list(reversed(compared)),
+            "gas_bills": list(reversed(gas)),
+            "years": yearly_totals(self.bills),
             "ratio": ratio,
             "ratio_bills": ratio_bills,
             "month": month_start.strftime("%Y-%m"),

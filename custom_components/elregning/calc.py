@@ -20,6 +20,9 @@ RATIO_BILLS = 3
 # Forholdet bruges kun, hvis det ligger inden for dette (ellers er noget galt med en indtastning eller målingen)
 RATIO_LIMITS = (0.5, 2.0)
 
+UTILITY_EL = "el"
+UTILITY_GAS = "gas"
+
 
 @dataclass(frozen=True)
 class Measured:
@@ -48,6 +51,7 @@ def compare_bill(bill: dict, measured: Measured) -> dict:
     kwh = bill.get("kwh")
     out = {
         "id": bill["id"],
+        "utility": UTILITY_EL,
         "start": bill["start"],
         "end": bill["end"],
         "days": days,
@@ -107,3 +111,68 @@ def forecast(
         "bill": round(own_cost * ratio, 2) if ratio else round(own_cost, 2),
         "ratio": round(ratio, 4) if ratio else None,
     }
+
+
+def gas_bill(bill: dict) -> dict:
+    """En gasregning som den vises: gas måles ikke af HA, så den sammenlignes ikke (Claude AI, 2026-11-13)."""
+    start, end = date.fromisoformat(bill["start"]), date.fromisoformat(bill["end"])
+    amount = float(bill["amount"])
+    m3 = bill.get("m3")
+    kwh = bill.get("kwh")
+    return {
+        "id": bill["id"],
+        "utility": UTILITY_GAS,
+        "start": bill["start"],
+        "end": bill["end"],
+        "days": bill_days(start, end),
+        "amount": round(amount, 2),
+        "m3": round(float(m3), 2) if m3 is not None else None,
+        "kwh": round(float(kwh), 2) if kwh is not None else None,
+        "price_m3": round(amount / float(m3), 3) if m3 else None,
+        "supplier": bill.get("supplier"),
+        "note": bill.get("note"),
+    }
+
+
+def yearly_totals(bills: list[dict]) -> list[dict]:
+    """Regningerne lagt sammen pr. kalenderår og forsyning (el/gas), nyeste år først.
+
+    En regning, der går hen over et årsskifte, fordeles efter antal dage i hvert år. "months" er antal
+    måneder, regningerne dækker i året (dage ÷ gennemsnitlig månedslængde), så et år med huller kan ses.
+    """
+    acc: dict[tuple[int, str], dict] = {}
+    for bill in bills:
+        start, end = date.fromisoformat(bill["start"]), date.fromisoformat(bill["end"])
+        total_days = bill_days(start, end)
+        utility = bill.get("utility") or UTILITY_EL
+        for year in range(start.year, end.year + 1):
+            first, last = max(start, date(year, 1, 1)), min(end, date(year, 12, 31))
+            share = bill_days(first, last) / total_days
+            row = acc.setdefault(
+                (year, utility),
+                {"year": year, "utility": utility, "amount": 0.0, "kwh": None, "m3": None, "days": 0, "bills": 0},
+            )
+            row["amount"] += float(bill["amount"]) * share
+            row["days"] += bill_days(first, last)
+            row["bills"] += 1
+            for key in ("kwh", "m3"):
+                if bill.get(key) is not None:
+                    row[key] = (row[key] or 0.0) + float(bill[key]) * share
+    out = []
+    for (year, _utility), row in sorted(acc.items(), key=lambda kv: (-kv[0][0], kv[0][1])):
+        amount = round(row["amount"], 2)
+        kwh = round(row["kwh"], 1) if row["kwh"] is not None else None
+        m3 = round(row["m3"], 1) if row["m3"] is not None else None
+        out.append(
+            {
+                **row,
+                "year": year,
+                "amount": amount,
+                "kwh": kwh,
+                "m3": m3,
+                "months": round(row["days"] / 30.4375, 1),
+                "price_kwh": round(amount / kwh, 3) if kwh else None,
+                "price_m3": round(amount / m3, 3) if m3 else None,
+            }
+        )
+    return out

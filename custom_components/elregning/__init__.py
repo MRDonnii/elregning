@@ -13,7 +13,7 @@ from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.util import dt as dt_util
 
-from .const import DOMAIN, SERVICE_ADD, SERVICE_DELETE, SERVICE_UPDATE
+from .const import DOMAIN, SERVICE_ADD, SERVICE_DELETE, SERVICE_UPDATE, UTILITIES
 from .coordinator import ElregningCoordinator
 
 PLATFORMS = [Platform.SENSOR]
@@ -23,6 +23,8 @@ _FIELDS = {
     vol.Optional("kwh"): vol.Any(None, vol.All(vol.Coerce(float), vol.Range(min=0))),
     vol.Optional("supplier"): vol.Any(None, cv.string),
     vol.Optional("note"): vol.Any(None, cv.string),
+    vol.Optional("m3"): vol.Any(None, vol.All(vol.Coerce(float), vol.Range(min=0))),
+    vol.Optional("utility"): vol.In(UTILITIES),
 }
 ADD_SCHEMA = vol.Schema(
     {
@@ -58,7 +60,9 @@ def _apply(bill: dict, data: dict) -> None:
             bill[target] = data[key].isoformat()
     if "amount" in data:
         bill["amount"] = round(float(data["amount"]), 2)
-    for key in ("kwh", "supplier", "note"):
+    if "utility" in data:
+        bill["utility"] = data["utility"]
+    for key in ("kwh", "m3", "supplier", "note"):
         if key in data:
             value = data[key]
             bill[key] = None if value in (None, "") else value

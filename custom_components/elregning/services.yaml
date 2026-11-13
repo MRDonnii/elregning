@@ -31,6 +31,20 @@ add_bill:
     note:
       selector:
         text:
+    m3:
+      selector:
+        number:
+          min: 0
+          max: 100000
+          step: 0.01
+          unit_of_measurement: m³
+          mode: box
+    utility:
+      selector:
+        select:
+          options:
+            - el
+            - gas
 update_bill:
   fields:
     id:
@@ -65,6 +79,20 @@ update_bill:
     note:
       selector:
         text:
+    m3:
+      selector:
+        number:
+          min: 0
+          max: 100000
+          step: 0.01
+          unit_of_measurement: m³
+          mode: box
+    utility:
+      selector:
+        select:
+          options:
+            - el
+            - gas
 delete_bill:
   fields:
     id:

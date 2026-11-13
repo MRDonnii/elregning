@@ -3,6 +3,7 @@
 from datetime import datetime, timedelta
 
 import pytest
+import voluptuous as vol
 from homeassistant.components.recorder.statistics import async_import_statistics
 
 try:  # HA 2025.4+ wants mean_type (and from 2025.10 unit_class) in the metadata
@@ -136,3 +137,46 @@ async def test_bill_compare_and_forecast(hass, recorder_mock, freezer, hass_time
     assert await hass.config_entries.async_reload(entry.entry_id)
     await hass.async_block_till_done()
     assert float(hass.states.get("sensor.elregning_seneste_regning").state) == 1500
+
+
+@pytest.mark.parametrize("hass_time_zone", ["Europe/Copenhagen"])
+async def test_gas_bills_are_kept_apart(hass, recorder_mock, freezer, hass_time_zone):
+    """Gasregninger gemmes og lægges sammen pr. år, men holdes ikke op mod elmåleren (Claude AI, 2026-11-13)."""
+    await hass.config.async_set_time_zone(hass_time_zone)
+    now = datetime(2026, 11, 15, 12, 0, tzinfo=dt_util.get_default_time_zone())
+    freezer.move_to(now)
+    await _seed(hass, now.astimezone(dt_util.UTC))
+    entry = MockConfigEntry(domain=DOMAIN, data={"energy_entity": ENERGY, "cost_entity": COST}, unique_id=DOMAIN)
+    entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+
+    for data in (
+        {"start_date": "2026-10-01", "end_date": "2026-10-31", "amount": 1600, "kwh": 744},
+        # Gas for samme måned: må ikke blive "seneste regning" eller trække prognosen
+        {"start_date": "2026-10-01", "end_date": "2026-10-31", "amount": 900, "m3": 100, "utility": "gas"},
+        {"start_date": "2025-10-01", "end_date": "2025-12-31", "amount": 3000, "m3": 600, "utility": "gas"},
+    ):
+        await hass.services.async_call(DOMAIN, "add_bill", data, blocking=True, return_response=True)
+    await hass.async_block_till_done()
+
+    last = hass.states.get("sensor.elregning_seneste_regning")
+    assert float(last.state) == 1600
+    assert [b["utility"] for b in last.attributes["regninger"]] == ["el"]
+    gas = last.attributes["gasregninger"]
+    assert [b["start"] for b in gas] == ["2026-10-01", "2025-10-01"]
+    assert gas[0]["m3"] == 100 and gas[0]["price_m3"] == 9.0
+    years = {(y["year"], y["utility"]): y for y in last.attributes["aar"]}
+    assert years[(2026, "el")]["amount"] == 1600 and years[(2026, "gas")]["m3"] == 100
+    assert years[(2025, "gas")]["amount"] == 3000
+    ratio = hass.states.get("sensor.elregning_prognose_denne_maned").attributes["forhold_regning_maaling"]
+    assert ratio == round(1600 / (745 * PRICE), 4)
+
+    with pytest.raises(vol.Invalid):
+        await hass.services.async_call(
+            DOMAIN,
+            "add_bill",
+            {"start_date": "2026-10-01", "end_date": "2026-10-31", "amount": 1, "utility": "vand"},
+            blocking=True,
+            return_response=True,
+        )

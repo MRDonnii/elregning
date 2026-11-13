@@ -54,6 +54,14 @@
         "note": {
           "name": "Note",
           "description": "Valgfri bemærkning."
+        },
+        "utility": {
+          "name": "Forsyning",
+          "description": "el (standard) holdes op mod HA's måler; gasregninger gemmes kun og lægges sammen pr. år."
+        },
+        "m3": {
+          "name": "m³",
+          "description": "Gasforbrug på regningen (valgfrit)."
         }
       }
     },
@@ -88,6 +96,14 @@
         "note": {
           "name": "Note",
           "description": "Valgfri bemærkning."
+        },
+        "utility": {
+          "name": "Forsyning",
+          "description": "el (standard) holdes op mod HA's måler; gasregninger gemmes kun og lægges sammen pr. år."
+        },
+        "m3": {
+          "name": "m³",
+          "description": "Gasforbrug på regningen (valgfrit)."
         }
       }
     },

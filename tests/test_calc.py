@@ -51,3 +51,19 @@ def test_forecast_with_and_without_ratio():
     f = forecast(500.0, 250.0, 50.0, 25.0, 10.0, 1.1)
     assert f == {"own_cost": 1000.0, "kwh": 500.0, "bill": 1100.0, "ratio": 1.1}
     assert forecast(500.0, 250.0, None, None, 10.0, None)["bill"] == 500.0
+
+
+def test_yearly_totals_split_bill_over_new_year():
+    from custom_components.elregning.calc import yearly_totals
+
+    bills = [
+        {"id": "a", "start": "2024-12-01", "end": "2025-01-31", "amount": 620.0, "kwh": 62.0},
+        {"id": "b", "start": "2025-02-01", "end": "2025-02-28", "amount": 280.0, "kwh": 28.0},
+        {"id": "g", "start": "2025-01-01", "end": "2025-03-31", "amount": 900.0, "m3": 90.0, "utility": "gas"},
+    ]
+    years = {(y["year"], y["utility"]): y for y in yearly_totals(bills)}
+    assert years[(2024, "el")]["amount"] == 310.0 and years[(2024, "el")]["kwh"] == 31.0
+    assert years[(2025, "el")]["amount"] == 590.0 and years[(2025, "el")]["price_kwh"] == 10.0
+    assert years[(2025, "gas")]["m3"] == 90.0 and years[(2025, "gas")]["kwh"] is None
+    assert years[(2025, "gas")]["price_m3"] == 10.0
+    assert yearly_totals(bills)[0]["year"] == 2025
